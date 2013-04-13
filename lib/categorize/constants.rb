@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Constants
   module Words
     # only include words > 2 chars
