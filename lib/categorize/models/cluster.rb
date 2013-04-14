@@ -3,9 +3,9 @@
 module Categorize
   module Models
     class Cluster < AbstractModel
-      @num_clusters = 10
 
       def initialize
+        @num_clusters = 10
         @clusterer = Ai4r::Clusterers::WardLinkage.new
         super
       end
@@ -18,11 +18,11 @@ module Categorize
       end
 
       def build_categories(clusters)
-        docs_as_indices = clusters.map do |cluster|
+        cluster_indices = clusters.map do |cluster|
           cluster.data_items.map { |v| @vectors.index(v) }
         end
-        nums_to_docs = (0..(@num_clusters - 1)).zip(docs_as_indices)
-        clusters_to_records = Hash[nums_to_docs]
+
+        clusters_to_records = Hash[(0...@num_clusters).zip(cluster_indices)]
 
         @query_terms ||= @query.split.map(&:downcase)
 
@@ -33,15 +33,19 @@ module Categorize
         end
 
         records = clusters_to_records.values
-        # merge duplicate labeled categories
+
+        # merge categories with the same label
         categories_records = []
         categories.each_with_index do |category, i|
-          if j = categories[0...i].index(category) && categories_records[j]
+          j = categories[0...i].index(category)
+
+          if j && categories_records[j]
             categories_records[j].last + records.shift
           else
             categories_records << [category, records.shift]
           end
         end
+
         categories_records
       end
 
