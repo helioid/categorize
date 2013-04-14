@@ -30,6 +30,6 @@ Categorize.make_model('nanotubes', documents)
 }
 ```
 
-h2. Ownership
+## Ownership
 
 Copyright (c) 2013, Helioid Inc. and Peter Lubell-Doughtie. Licensed under the 3-clause BSD License, see file LICENSE for details.
