@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 module DocumentHelper
+  Query = 'lorem'
+
   Documents = [
     %q(Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -163,4 +165,8 @@ module DocumentHelper
     %w(neptune ships viribus unitis model viribus unitis built neptune ship
        modeling club makeevka ukraine),
   ]
+
+  def self.records_to_tokens
+    Categorize::Model.lexicalize(Documents)
+  end
 end

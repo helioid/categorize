@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 module Categorize
-  describe Categorize do
+  describe Model do
     before :each do
       documents = DocumentHelper::Documents
 
@@ -14,7 +14,7 @@ module Categorize
 
     it 'categorizes based on number of documents' do
       query = 'test'
-      results = Categorize.make_model(query, @documents)
+      results = Model.make_model(query, @documents)
 
       results.each do |category, documents|
         @strings.should include(category)
