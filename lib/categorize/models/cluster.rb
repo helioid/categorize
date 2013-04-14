@@ -18,11 +18,9 @@ module Categorize
       end
 
       def build_categories(clusters)
-        cluster_indices = clusters.map do |cluster|
-          cluster.data_items.map { |v| @vectors.index(v) }
-        end
-
-        clusters_to_records = Hash[(0...@num_clusters).zip(cluster_indices)]
+        clusters_to_records = Hash[clusters.each_with_index.map do |cluster, i|
+          [i, cluster.data_items.map { |v| @vectors.index(v) }]
+        end]
 
         @query_terms ||= @query.split.map(&:downcase)
 
