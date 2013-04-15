@@ -22,7 +22,7 @@ documents = {
   "doc3" => ["vero", "eos", "accusamus", "iusto", "odio"]
 }
 
-Categorize.make_model('nanotubes', documents)
+Categorize.make_model('lorem', documents)
 => {
   "ipsum"            => ["doc0"],
   "sed perspiciatis" => ["doc1"],
