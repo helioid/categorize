@@ -16,17 +16,17 @@ $ gem install categorize
 
 ```ruby
 documents = {
-  "doc0" => ["lorem", "ipsum", "dolor"],
-  "doc1" => ["sed", "perspiciatis", "unde"],
-  "doc2" => ["vero", "eos", "accusamus"],
-  "doc3" => ["vero", "eos", "accusamus", "iusto", "odio"]
+  'doc0' => ['lorem', 'ipsum', 'dolor'],
+  'doc1' => ['sed', 'perspiciatis', 'unde'],
+  'doc2' => ['vero', 'eos', 'accusamus'],
+  'doc3' => ['vero', 'eos', 'accusamus', 'iusto', 'odio']
 }
 
 Categorize.make_model('lorem', documents)
 => {
-  "ipsum"            => ["doc0"],
-  "sed perspiciatis" => ["doc1"],
-  "vero"             => ["doc2", "doc3"]
+  'ipsum'            => ['doc0'],
+  'sed perspiciatis' => ['doc1'],
+  'vero'             => ['doc2', 'doc3']
 }
 ```
 
