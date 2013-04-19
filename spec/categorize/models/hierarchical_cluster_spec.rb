@@ -27,6 +27,15 @@ module Categorize
           end
         end
       end
+
+      it 'should cluster using a hierarchical model' do
+        documents = DocumentHelper::Helioid
+        hierarchical_model = Models::HierarchicalCluster.new
+
+        results = Model.make_model('helioid', documents, hierarchical_model)
+
+        results.length.should eq(5)
+      end
     end
   end
 end
