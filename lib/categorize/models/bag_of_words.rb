@@ -8,16 +8,19 @@ module Categorize
       include Utils::Grams
 
       # DEBUG = false
-      # TODO: some gradient descent to choose this number
-      # 0 <= MIN_SUPP <= 1, we like 0.01 <= MIN_SUPP <= 0.1
-      MIN_SUPP_L = 0.07
-      MIN_SUPP_H = 0.1
-      NUM_TOP_GRAMS = 250
-      MAX_BUCKETS = 8
+      attr_accessor :max_buckets, :min_support, :num_top_grams
+
+      # 0 <= min_support <= 1, we like 0.01 <= min_support <= 0.1
+      def initialize
+        @max_buckets = 8
+        # TODO: some gradient descent to choose this number
+        @min_support = 0.07
+        @num_top_grams = 250
+      end
 
       # function worst case
       # O(2 x (|frequent_grams| x |gram_collections|) +
-      #   |all_grams| + MAX_BUCKETS x |gram_collections|)
+      #   |all_grams| + @max_buckets x |gram_collections|)
       def model(query, records_to_tokens)
         @gram_cover_cache = {}
         @gram_collections, @all_grams = create_grams(query, records_to_tokens)
@@ -25,9 +28,9 @@ module Categorize
         top_grams = determine_frequency_term_sets(@all_grams, query)
         top_grams = top_grams.keys.sort do |gram_c1, gram_c2|
           top_grams[gram_c1] <=> top_grams[gram_c2]
-        end.first(MAX_BUCKETS)
+        end.first(@max_buckets)
 
-        # below block, worst case O(MAX_BUCKETS x |gram_collections|)
+        # below block, worst case O(@max_buckets x |gram_collections|)
         @gram_collections.reduce({}) do |buckets, gram_collection|
           max_fitness = 0
           max_fit = nil
@@ -55,14 +58,13 @@ module Categorize
           result.grams.nil? || result.grams.empty?
         end.length
 
-        min_cover_l = MIN_SUPP_L * effective_length
-        # min_cover_h = MIN_SUPP_H * effective_length
+        min_cover_l = @min_support * effective_length
 
         # for speed only look at top N grams
         # below block, worst case O(|all_grams|)
         frequent_grams = all_grams.sort do |gram1, gram2|
           gram2.frequency <=> gram1.frequency
-        end.first(NUM_TOP_GRAMS)
+        end.first(@num_top_grams)
 
         # below block, worst case O(|frequent_grams| x |gram_collections|)
         frequent_grams = frequent_grams.delete_if do |gram|
