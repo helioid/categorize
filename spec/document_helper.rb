@@ -166,6 +166,24 @@ module DocumentHelper
        modeling club makeevka ukraine),
   ]
 
+  Helioid = [
+    %q(Using Helioid search refinement tools you can find and explore what
+       you are looking for by interactively narrowing your search results.
+       Helioid is a visual search),
+    %q(Helioid is a visual search and aggregation tool that enables
+       information exploration. Using Helioid's search refinement tools you
+       can find.),
+    %q(The floor of Silicon Valley is littered with the carcasses of failed
+       search startups. Without billions of dollars in resources like
+       Microsoft or a tight),
+    %q(Dictionary of Difficult Words - helioid. helioid. a. like the sun.
+       Find a word. Find a difficult word here. Click on a letter to find
+       the word: A B C D E F G H I J K L M N),
+    %q(Welcome to the company profile of Helioid on LinkedIn. Using
+       Helioid's search refinement tools you can find and explore what
+       you're looking for by)
+  ]
+
   def self.records_to_tokens
     Categorize::Model.lexicalize(Documents)
   end
