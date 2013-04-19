@@ -50,6 +50,8 @@ documents = [
 ]
 
 bag_of_words = Models::BagOfWords.new
+
+# Customize the parameters for the bag of words model.
 bag_of_words.max_buckets = 3
 bag_of_words.min_support = 0.4
 
@@ -60,33 +62,46 @@ Model.make_model('helioid', documents, bag_of_words)
   'like' => [2, 3]
 }
 
+# Use an alternative clustering model.
+clusterer = Models::Cluster.new
+clusterer.num_clusters = 3
+
+Model.make_model('helioid', documents, clusterer)
+=> {
+  'floor silicon' => [2],
+  'word difficult' => [3],
+  'search refinement' => [1, 0, 4]
+}
+
+# Use an alternative hierarchical model.
 hierarchical_model = Models::HierarchicalCluster.new
-Model.make_model('helioid', documents, bag_of_words)
+
+Model.make_model('helioid', documents, hierarchical_model)
 => [
   [
-    ["search refinement", [3, 2, 1, 0, 4]]
+    ['search refinement', [3, 2, 1, 0, 4]]
   ],
   [
-    ["search refinement", [1, 0, 4]],
-    ["word difficult", [3, 2]]
+    ['search refinement', [1, 0, 4]],
+    ['word difficult', [3, 2]]
   ],
   [
-    ["floor silicon", [2]],
-    ["word difficult", [3]],
-    ["search refinement", [1, 0, 4]]
+    ['floor silicon', [2]],
+    ['word difficult', [3]],
+    ['search refinement', [1, 0, 4]]
   ],
   [
-    ["floor silicon", [2]],
-    ["word difficult", [3]],
-    ["welcome company", [4]],
-    ["visual search", [1, 0]]
+    ['floor silicon', [2]],
+    ['word difficult', [3]],
+    ['welcome company', [4]],
+    ['visual search', [1, 0]]
   ],
   [
-    ["search refinement", [0]],
-    ["visual search", [1]],
-    ["floor silicon", [2]],
-    ["word difficult", [3]],
-    ["welcome company", [4]]
+    ['search refinement', [0]],
+    ['visual search', [1]],
+    ['floor silicon', [2]],
+    ['word difficult', [3]],
+    ['welcome company', [4]]
   ]
 ]
 ```
