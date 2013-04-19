@@ -15,17 +15,17 @@ $ gem install categorize
 ## Basic Usage
 ```ruby
 documents = {
-  "doc0" => ["lorem", "ipsum", "dolor"],
-  "doc1" => ["sed", "perspiciatis", "unde"],
-  "doc2" => ["vero", "eos", "accusamus"],
-  "doc3" => ["vero", "eos", "accusamus", "iusto", "odio"]
+  'doc0' => ['lorem', 'ipsum', 'dolor'],
+  'doc1' => ['sed', 'perspiciatis', 'unde'],
+  'doc2' => ['vero', 'eos', 'accusamus'],
+  'doc3' => ['vero', 'eos', 'accusamus', 'iusto', 'odio']
 }
 
 Model.make_model('nanotubes', documents)
 => {
-  "ipsum"            => ["doc0"],
-  "sed perspiciatis" => ["doc1"],
-  "vero"             => ["doc2", "doc3"]
+  'ipsum'            => ['doc0'],
+  'sed perspiciatis' => ['doc1'],
+  'vero'             => ['doc2', 'doc3']
 }
 ```
 
