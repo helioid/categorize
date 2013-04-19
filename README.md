@@ -31,6 +31,7 @@ Model.make_model('nanotubes', documents)
 
 ## Modify Model Parameters
 ```ruby
+# Helioid search result abstracts as example documents.
 documents = [
   %q(Using Helioid search refinement tools you can find and explore what
      you are looking for by interactively narrowing your search results.
