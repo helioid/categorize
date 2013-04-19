@@ -4,6 +4,8 @@ module Categorize
   module Models
     class Cluster < AbstractModel
 
+      attr_accessor :num_clusters
+
       def initialize
         @num_clusters = 10
         @clusterer = Ai4r::Clusterers::WardLinkage.new
