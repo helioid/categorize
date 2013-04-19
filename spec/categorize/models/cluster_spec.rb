@@ -23,6 +23,18 @@ module Categorize
           tokens_as_string.should include(category)
         end
       end
+
+      it 'should apply the model' do
+        documents = DocumentHelper::Helioid
+        clusterer = Models::Cluster.new
+        clusterer.num_clusters = 3
+
+        results = Hash[Model.make_model('helioid', documents, clusterer)]
+
+        puts "#{results}"
+
+        results.length.should eq(3)
+      end
     end
   end
 end
