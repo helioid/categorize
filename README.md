@@ -29,7 +29,7 @@ Model.make_model('nanotubes', documents)
 }
 ```
 
-## Modify Custom Parameters
+## Modify Model Parameters
 ```ruby
 documents = [
   %q(Using Helioid search refinement tools you can find and explore what
@@ -59,6 +59,36 @@ Model.make_model('helioid', documents, bag_of_words)
   'helioid visual search' => [1],
   'like' => [2, 3]
 }
+
+hierarchical_model = Models::HierarchicalCluster.new
+Model.make_model('helioid', documents, bag_of_words)
+=> [
+  [
+    ["search refinement", [3, 2, 1, 0, 4]]
+  ],
+  [
+    ["search refinement", [1, 0, 4]],
+    ["word difficult", [3, 2]]
+  ],
+  [
+    ["floor silicon", [2]],
+    ["word difficult", [3]],
+    ["search refinement", [1, 0, 4]]
+  ],
+  [
+    ["floor silicon", [2]],
+    ["word difficult", [3]],
+    ["welcome company", [4]],
+    ["visual search", [1, 0]]
+  ],
+  [
+    ["search refinement", [0]],
+    ["visual search", [1]],
+    ["floor silicon", [2]],
+    ["word difficult", [3]],
+    ["welcome company", [4]]
+  ]
+]
 ```
 
 ## Ownership
