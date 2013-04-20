@@ -4,7 +4,7 @@ require 'spec_helper'
 
 module Categorize
   module Models
-    # describe CBagOfWords do
-    # end
+    describe CBagOfWords do
+    end
   end
 end
