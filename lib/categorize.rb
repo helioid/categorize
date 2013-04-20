@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 # The C extension is listed first.
-require 'categorize/categorize' unless ENV['NO_C_INCLUDE']
+require 'categorize/categorize'
 
 require 'categorize/models/abstract_model'
 require 'categorize/models/bag_of_words'

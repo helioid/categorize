@@ -24,15 +24,17 @@ Rake::ExtensionTask.new(gem_name)
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
-
-  ENV['NO_C_INCLUDE'] = 'true'
 end
 
-task :spec => :compile
+task :spec => [:build, :install]
 task :default => :spec
 
 task :build do
   system "gem build #{gem_name}.gemspec"
+end
+
+task :install do
+  system "gem install #{gem_name}-#{Categorize::VERSION}.gem --no-ri --no-rdoc"
 end
 
 task :release do

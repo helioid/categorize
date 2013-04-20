@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ai4ruby (1.14)
+    categorize (0.0.11)
     diff-lcs (1.2.3)
     rake (10.0.4)
     rake-compiler (0.8.3)
@@ -21,6 +22,7 @@ PLATFORMS
 DEPENDENCIES
   ai4ruby
   bundler
+  categorize
   rake
   rake-compiler
   rspec
