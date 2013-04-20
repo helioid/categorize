@@ -8,12 +8,16 @@ performance over accuracy and is built to run online in dynamic web services.
 ## Installation
 
 **Categorize** is installable as a [Ruby Gem](https://rubygems.org/gems/categorize):
-```base
+```bash
 $ gem install categorize
 ```
 
 ## Basic Usage
 ```ruby
+require 'categorize'
+
+include Categorize
+
 documents = {
   'doc0' => ['lorem', 'ipsum', 'dolor'],
   'doc1' => ['sed', 'perspiciatis', 'unde'],
@@ -62,8 +66,10 @@ Model.make_model('helioid', documents, bag_of_words)
   'helioid visual search' => [1],
   'like' => [2, 3]
 }
+```
 
-# Use an alternative clustering model.
+## Use an alternative model.
+```ruby
 clusterer = Models::Cluster.new
 clusterer.num_clusters = 3
 
@@ -73,8 +79,10 @@ Model.make_model('helioid', documents, clusterer)
   'word difficult' => [3],
   'search refinement' => [1, 0, 4]
 }
+```
 
-# Use an alternative hierarchical model.
+## Use an alternative hierarchical model.
+```ruby
 hierarchical_model = Models::HierarchicalCluster.new
 
 Model.make_model('helioid', documents, hierarchical_model)
