@@ -10,10 +10,27 @@ rescue Bundler::BundlerError => e
 end
 
 require 'rake'
+require 'rake/extensiontask'
 require 'rspec/core'
 require 'rspec/core/rake_task'
+
+gem_name = 'categorize'
+
+Rake::ExtensionTask.new(gem_name)
+
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
+
+  ENV['NO_C_INCLUDE'] = 'true'
 end
 
+task :spec => :compile
 task :default => :spec
+
+task :build do
+  system "gem build #{gem_name}.gemspec"
+end
+
+task :release do
+  system "gem push #{gem_name}-#{Categorize::VERSION}"
+end
