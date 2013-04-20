@@ -31,8 +31,6 @@ module Categorize
 
         results = Hash[Model.make_model('helioid', documents, clusterer)]
 
-        puts "#{results}"
-
         results.length.should eq(3)
       end
     end
