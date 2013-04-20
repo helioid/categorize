@@ -1,6 +1,12 @@
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'categorize/version'
+
 Gem::Specification.new do |s|
   s.name         = 'categorize'
-  s.version      = '0.0.9'
+  s.version      = Categorize::VERSION
+  s.platform     = Gem::Platform::RUBY
   s.date         = '2013-04-14'
   s.summary      = 'A text categorization library.'
   s.description  = %q(A text categorization library that favors performance.
