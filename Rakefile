@@ -14,6 +14,10 @@ require 'rake/extensiontask'
 require 'rspec/core'
 require 'rspec/core/rake_task'
 
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+require 'categorize/version'
+
 gem_name = 'categorize'
 
 Rake::ExtensionTask.new(gem_name)
@@ -32,5 +36,5 @@ task :build do
 end
 
 task :release do
-  system "gem push #{gem_name}-#{Categorize::VERSION}"
+  system "gem push #{gem_name}-#{Categorize::VERSION}.gem"
 end
