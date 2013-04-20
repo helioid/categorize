@@ -4,11 +4,15 @@
 #include <stdlib.h> /* exit() */
 #include "ruby.h"
 
+typedef enum { false, true } bool;
+
 // START header
 // For information and references about the module to be stored internally.
-VALUE Bow = Qnil;
+VALUE Categorize = Qnil;
+VALUE CBagOfWords = Qnil;
+VALUE Models = Qnil;
 
-static VALUE method_model_bow(VALUE, VALUE);
+static VALUE method_make_model(VALUE, VALUE);
 static int add_or_update_gram_from_index(int, char *);
 
 // Store all grams, used in  compare_top_grams.
@@ -16,10 +20,12 @@ static char **all_grams_pp;
 // END header
 
 // Initialization method for this module.
-void Init_bow()
+void Init_categorize()
 {
-  Bow = rb_define_module("Bow");
-  rb_define_method(Bow, "model_bow", method_model_bow, 1);
+  Categorize = rb_define_module("Categorize");
+  Models = rb_define_module_under(Categorize, "Models");
+  CBagOfWords = rb_define_class_under(Models, "CBagOfWords", rb_cObject);
+  rb_define_method(CBagOfWords, "make_model", method_make_model, 1);
 }
 
 const bool DEBUG = false;
@@ -92,7 +98,8 @@ int compare_grams(const void *gram1, const void *gram2)
 {
   intptr_t g1, g2;
 
-  if (fetch(*(const char **) gram1, &g1) && fetch(*(const char **) gram2, &g2)) {
+  if (fetch(*(const char **) gram1, &g1) &&
+      fetch(*(const char **) gram2, &g2)) {
     return (*(gram *) g2).freq - (*(gram *) g1).freq;
   } else
     fail("compare_grams");
@@ -115,17 +122,37 @@ int compare_top_grams(const void *idx1, const void *idx2)
 }
 
 /*
- * model_bow(array_of_tokens);
+ * make_model(array_of_tokens);
  * ==== Return
  * Top terms
  * ==== Parameters
  * array_of_tokens: Tokens to turn into grams and extract phrases from.
  */
-static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
+static VALUE method_make_model(VALUE self, VALUE array_of_tokens)
 {
   int i, j;
   long array_of_tokens_len = RARRAY_LEN(array_of_tokens);
   int num_grams = 0;
+  int gram_counter;
+  char *tmp;
+  char *str;
+  char *bigram;
+  char *trigram;
+  char *last_word;
+  char *last_2nd_word;
+  int non_empty_tokens;
+  int tmp_int;
+  int min_cover;
+  int num_top_grams;
+  int top_gram_counter;
+  float max_fitness;
+  int max_fit_idx;
+  VALUE term;
+  VALUE term_for_record;
+  intptr_t g, all_g;
+  int count;
+  char *key;
+  char *max_fit;
 
   for (i = 0; i < array_of_tokens_len; i++) {
     // n + n - 1 + n - 2 = 3n - 3 = 3(n - 1)
@@ -142,15 +169,8 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
   all_grams_pp = malloc(sizeof(char *) * num_grams);
   if (all_grams_pp == NULL) rb_fatal("No memory for all_grams_pp");
 
-  int gram_counter = 0;
-  char *tmp;
-  char *str;
-  char *bigram;
-  char *trigram;
-  char *last_word;
-  char *last_2nd_word;
-  int non_empty_tokens = 0;
-  int tmp_int;
+  gram_counter = 0;
+  non_empty_tokens = 0;
 
   for (i = 0; i < array_of_tokens_len; i++) {
     // n grams
@@ -160,6 +180,7 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
 
     for (j = 0; j < RARRAY_LEN(rb_ary_entry(array_of_tokens, i)); j++) {
       VALUE rb_str = rb_ary_entry(rb_ary_entry(array_of_tokens, i), j);
+
       // store str via malloc so we can free it along with others
       tmp = StringValueCStr(rb_str);
       tmp_int = 1 + strlen(tmp);
@@ -209,7 +230,8 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
     if (j > 0) non_empty_tokens++;
     if (DEBUG) printf("end i: %i\n", i);
   }
-  int min_cover = (int) (MIN_SUPPORT * non_empty_tokens);
+
+  min_cover = (int) (MIN_SUPPORT * non_empty_tokens);
 
   if (DEBUG) printf("added %i grams\n", gram_counter);
 
@@ -217,7 +239,8 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
   qsort(all_grams_pp, gram_counter, sizeof(char *), compare_grams);
 
   // only consider prominent top NUM_TOP_GRAMS grams
-  int num_top_grams = gram_counter < NUM_TOP_GRAMS ? gram_counter : NUM_TOP_GRAMS;
+  num_top_grams = gram_counter < NUM_TOP_GRAMS ? gram_counter :
+                                                     NUM_TOP_GRAMS;
 
   if (DEBUG) printf("gc %i, ntg %i, atl: %li\n",
                     gram_counter, num_top_grams, array_of_tokens_len);
@@ -226,10 +249,7 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
 
   if (top_grams_p == NULL) rb_fatal("No memory for top_grams_p");
 
-  int top_gram_counter = 0;
-  intptr_t g, all_g;
-  int count;
-  char *key;
+  top_gram_counter = 0;
 
   for (i = 0; i < num_top_grams; i++) {
     count = 0;
@@ -238,6 +258,7 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
 
       if (fetch(key, &g) && (*(gram *) g).freq > 0 && ++count > min_cover) {
         top_grams_p[top_gram_counter++] = i;
+
         if (DEBUG) printf("%i: covering gram: %s\n",
                           top_gram_counter - 1, all_grams_pp[i]);
         break;
@@ -250,9 +271,6 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
     printf("tgc %i\n", top_gram_counter);
   }
 
-  float max_fitness;
-  char *max_fit;
-
   for (i = 0; i < array_of_tokens_len; i++) {
     if (DEBUG) printf("start i: %i\n", i);
 
@@ -261,7 +279,8 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
       key = make_key(i, all_grams_pp[top_grams_p[j]]);
 
       if (fetch(key, &g) && fetch(all_grams_pp[top_grams_p[j]], &all_g)) {
-        (*(gram *) g).fitness = (float) (*(gram *) g).freq / (float) (*(gram *) all_g).freq;
+        (*(gram *) g).fitness = (float) (*(gram *) g).freq /
+                                (float) (*(gram *) all_g).freq;
         if (DEBUG) printf("fitness %f\n", (*(gram *) g).fitness);
       }
 
@@ -283,6 +302,7 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
       }
 
       free(key);
+
       // store fitness of gram
       if (max_fit && fetch(max_fit, &g))
         (*(gram *) g).fitness += 1.0;
@@ -293,10 +313,10 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
 
   // sort top_grams and take MAX_BUCKETS
   qsort(top_grams_p, top_gram_counter, sizeof(int), compare_top_grams);
+
   if (DEBUG) printf("after qsort top grams\n");
 
-  int max_fit_idx;
-  VALUE term_for_record = rb_ary_new2(array_of_tokens_len);
+  term_for_record = rb_ary_new2(array_of_tokens_len);
 
   for (i = 0; i < array_of_tokens_len; i++) {
     max_fitness = 0;
@@ -313,9 +333,10 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
       free(key);
     }
 
-    VALUE term = rb_str_new2(all_grams_pp[top_grams_p[max_fit_idx]]);
+    term = rb_str_new2(all_grams_pp[top_grams_p[max_fit_idx]]);
     rb_ary_push(term_for_record, term);
   }
+
   if (DEBUG) printf("after qsort top grams\n");
   if (DEBUG) printf("freeing\n");
 
@@ -334,6 +355,7 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
 
   free(all_grams_pp);
   if (DEBUG) printf("freed all grams\n");
+
   hdestroy();
   if (DEBUG) printf("returning\n");
 
@@ -344,6 +366,7 @@ static VALUE method_model_bow(VALUE self, VALUE array_of_tokens)
 int add_or_update_gram(char *key)
 {
   intptr_t g;
+
   if (fetch(key, &g)) {
     (*(gram *) g).freq += 1;
     if (DEBUG) printf("key: %s, freq: %i\n", key, (*(gram *) g).freq);
@@ -352,6 +375,7 @@ int add_or_update_gram(char *key)
   } else {
     gram *g = malloc(sizeof(gram));
     if (g == NULL) rb_fatal("No memory for gram");
+
     (*g).freq = 1;
     (*g).fitness = 0.0;
     store(key, (intptr_t) g);
