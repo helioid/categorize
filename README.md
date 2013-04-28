@@ -2,8 +2,17 @@
 
 # Categorize
 
-**Categorize** is a text categorization library in Ruby.  It prioritizes
-performance over accuracy and is built to run online in dynamic web services.
+**Categorize** is a text categorization library written in Ruby.  It
+prioritizes performance over accuracy and is built to run online in dynamic web
+services.
+
+**Categorize** can be used with multiple models.  Included are a naive
+bag-of-words + coverage algorithm, a Ward clustering based algorithm, and a
+hierarchical Ward clustering based algoithm.
+
+**Categorize** also includes a C version of the bag-of-words algorithm. This
+may give a perfomance boost.  However, it is experimental and should be tested
+on the expected document size and length.
 
 ## Installation
 
@@ -126,6 +135,11 @@ Model.make_model_c(documents)
   'vero eos accusamus' => [3],
   'iusto' => [4]
 }
+```
+
+## Example: Categorizing search results.
+```ruby
+# TODO
 ```
 
 ## Ownership
