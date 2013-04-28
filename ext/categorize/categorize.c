@@ -12,7 +12,7 @@ VALUE Categorize = Qnil;
 VALUE CBagOfWords = Qnil;
 VALUE Models = Qnil;
 
-static VALUE method_make_model(VALUE, VALUE);
+static VALUE method_model(VALUE, VALUE);
 static int add_or_update_gram_from_index(int, char *);
 
 // Store all grams, used in  compare_top_grams.
@@ -25,7 +25,7 @@ void Init_categorize()
   Categorize = rb_define_module("Categorize");
   Models = rb_define_module_under(Categorize, "Models");
   CBagOfWords = rb_define_class_under(Models, "CBagOfWords", rb_cObject);
-  rb_define_method(CBagOfWords, "make_model", method_make_model, 1);
+  rb_define_method(CBagOfWords, "model", method_model, 1);
 }
 
 const bool DEBUG = false;
@@ -122,13 +122,13 @@ int compare_top_grams(const void *idx1, const void *idx2)
 }
 
 /*
- * make_model(array_of_tokens);
+ * model(array_of_tokens);
  * ==== Return
  * Top terms
  * ==== Parameters
  * array_of_tokens: Tokens to turn into grams and extract phrases from.
  */
-static VALUE method_make_model(VALUE self, VALUE array_of_tokens)
+static VALUE method_model(VALUE self, VALUE array_of_tokens)
 {
   int i, j;
   long array_of_tokens_len = RARRAY_LEN(array_of_tokens);
