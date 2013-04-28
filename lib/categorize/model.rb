@@ -4,6 +4,7 @@ module Categorize
   module Model
     MIN_WORD_LENGTH = 3
     @bag_of_words = Models::BagOfWords.new
+    @c_bag_of_words = Models::CBagOfWords.new
 
     class << self
       #include Bow
@@ -21,12 +22,13 @@ module Categorize
       # ==== Parameters
       # items:: the items to be classified
       def make_model_c(strings)
-        strings.map { |s| preprocess(s) }
-        #ret = model_bow(array_of_tokens);
+        array_of_tokens = strings.map { |s| preprocess(s) }
+        ret = @c_bag_of_words.model(array_of_tokens);
         count = 0
         ret.reduce({}) do |hash, term|
           hash[term] ||= []
-          hash[term] << count += 1
+          hash[term] << count
+          count += 1
           hash
         end
       end
