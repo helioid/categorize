@@ -9,6 +9,6 @@ group :development do
 end
 
 group :test do
-  gem 'categorize'
+  gem 'categorize', '>= 0.0.12'
   gem 'rspec'
 end
