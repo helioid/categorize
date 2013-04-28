@@ -18,18 +18,18 @@ require 'categorize'
 
 include Categorize
 
-documents = {
-  'doc0' => ['lorem', 'ipsum', 'dolor'],
-  'doc1' => ['sed', 'perspiciatis', 'unde'],
-  'doc2' => ['vero', 'eos', 'accusamus'],
-  'doc3' => ['vero', 'eos', 'accusamus', 'iusto', 'odio']
-}
+documents = [
+  %q(lorem ipsum dolor),
+  %q(sed perspiciatis unde),
+  %q(vero eos accusamus),
+  %q(vero eos accusamus iusto odio)
+]
 
-Model.make_model('nanotubes', documents)
+Model.make_model('lorem', documents)
 => {
-  'ipsum'            => ['doc0'],
-  'sed perspiciatis' => ['doc1'],
-  'vero'             => ['doc2', 'doc3']
+  'ipsum'            => [0],
+  'sed perspiciatis' => [1],
+  'vero'             => [2, 3]
 }
 ```
 
@@ -113,6 +113,19 @@ Model.make_model('helioid', documents, hierarchical_model)
     ['welcome company', [4]]
   ]
 ]
+
+## Use the C version, sometimes it is faster.
+```ruby
+# It does not take a pivot word.
+Model.make_model_c(documents)
+
+# Document enumeration starts at 1 (will be fixed).
+=> {
+  'ipsum' => [1],
+  'sed' => [2],
+  'vero eos accusamus' => [3],
+  'iusto' => [4]
+}
 ```
 
 ## Ownership
