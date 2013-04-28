@@ -39,15 +39,14 @@ module Categorize
         ]
       end
 
-      private
-        def preprocess(string)
-          split_lower_strings = string.split(
-              Constants::Words::SPLIT_REGEX).map(&:downcase)
-          split_lower_strings.delete_if do |word|
-            word.length < MIN_WORD_LENGTH ||
-              Constants::Words::COMMON.include?(word)
-          end
+      def preprocess(string)
+        split_lower_strings = string.split(
+            Constants::Words::SPLIT_REGEX).map(&:downcase)
+        split_lower_strings.delete_if do |word|
+           word.length < MIN_WORD_LENGTH ||
+            Constants::Words::COMMON.include?(word)
         end
+      end
     end
   end
 end
