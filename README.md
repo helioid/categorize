@@ -28,10 +28,10 @@ require 'categorize'
 include Categorize
 
 documents = [
-  %q(lorem ipsum dolor),
-  %q(sed perspiciatis unde),
-  %q(vero eos accusamus),
-  %q(vero eos accusamus iusto odio)
+  'lorem ipsum dolor',
+  'sed perspiciatis unde',
+  'vero eos accusamus',
+  'vero eos accusamus iusto odio'
 ]
 
 Model.make_model('lorem', documents)
