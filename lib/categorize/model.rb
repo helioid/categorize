@@ -23,7 +23,7 @@ module Categorize
       # items:: the items to be classified
       def make_model_c(strings)
         array_of_tokens = strings.map { |s| preprocess(s) }
-        ret = @c_bag_of_words.model(array_of_tokens);
+        ret = @c_bag_of_words.model(array_of_tokens)
         count = 0
         ret.reduce({}) do |hash, term|
           hash[term] ||= []

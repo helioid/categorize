@@ -90,7 +90,7 @@ Model.make_model('helioid', documents, clusterer)
 }
 ```
 
-## Use an alternative hierarchical model.
+## Use a hierarchical model.
 ```ruby
 hierarchical_model = Models::HierarchicalCluster.new
 
@@ -122,6 +122,7 @@ Model.make_model('helioid', documents, hierarchical_model)
     ['welcome company', [4]]
   ]
 ]
+```
 
 ## Use the C version, sometimes it is faster.
 ```ruby
@@ -138,9 +139,60 @@ Model.make_model_c(documents)
 ```
 
 ## Example: Categorizing search results.
-```ruby
-# TODO
+
+### Install the required gems.
+```bash
+$ gem install categorize
+$ gem install faroo
 ```
+
+### Simple ruby code in for a script or IRB.
+```ruby
+require 'categorize'
+require 'faroo'
+
+query = 'nanotubes'
+
+# Fetch 10 search results.
+results = Faroo.new('', 10).web(query)
+
+# Collect the titles.
+titles = results.map(&:title)
+
+# Build the categories.
+categories = Categorize::Model.make_model(query, titles)
+
+# Unify the documents and the categories.
+urls = results.map(&:url)
+
+categories.reduce({}) do |hash, entry|
+  category, indices = entry
+  hash[category] = indices.map { |i| urls[i] }
+  hash
+end
+=> {
+  "encyclopedia" => [
+    "http://en.wikipedia.org/wiki/Carbon_nanotube"],
+  "modular" => [
+    "http://www.flickr.com/photos/fdecomite/5047832096/in/pool-69453349@N00"],
+  "yield" => [
+    "http://www.abc.net.au/science/articles/2008/01/16/2139711.htm"],
+  "circuits" => [
+    "http://arstechnica.com/science/news/2012/04/moving-the-heat-around-using-nanotubes.ars"],
+  "new" => [
+    "http://cleantechnica.com/2012/10/11/new-method-of-fabricating-carbon-nanotubes-is-as-easy-as-writing-with-a-pencil/"],
+  "nanowire" => [
+    "http://news.cnet.com/Nanowire-or-nanotube-Intel-looks-ahead/2100-1006_3-957709.html"],
+  "ibm" => [
+    "http://www.computerworld.com/s/article/9232997/IBM_moving_to_replace_silicon_with_carbon_nanotubes_in_computer_chips"],
+  "paper" => [
+    "http://blogs.discovermagazine.com/80beats/2008/11/05/paper-thin-nanotube-speakers-can-turn-up-the-volume/",
+    "http://news.discovery.com/tech/draw-carbon-nanotubes-121012.html",
+    "http://dvice.com/archives/2012/11/first-all-carbo.php"]
+}
+```
+
+The above script is included in `examples/categorize_search_results.rb`.
 
 ## Ownership
 
