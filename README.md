@@ -129,12 +129,11 @@ Model.make_model('helioid', documents, hierarchical_model)
 # It does not take a pivot word.
 Model.make_model_c(documents)
 
-# Document enumeration starts at 1 (will be fixed).
 => {
-  'ipsum' => [1],
-  'sed' => [2],
-  'vero eos accusamus' => [3],
-  'iusto' => [4]
+  'ipsum' => [0],
+  'sed' => [1],
+  'vero eos accusamus' => [2],
+  'iusto' => [3]
 }
 ```
 

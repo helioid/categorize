@@ -28,23 +28,27 @@ module Categorize
         top_grams = determine_frequency_term_sets(@all_grams, query)
         top_grams = top_grams.keys.sort do |gram_c1, gram_c2|
           top_grams[gram_c1] <=> top_grams[gram_c2]
-        end.first(@max_buckets)
+        end
+        top_grams = top_grams.first(@max_buckets)
 
-        # below block, worst case O(@max_buckets x |gram_collections|)
-        @gram_collections.reduce({}) do |buckets, gram_collection|
+        find_max_fit(top_grams)
+      end
+
+      # function worst case O(@max_buckets x |gram_collections|)
+      def find_max_fit(top_grams)
+        @gram_collections.reduce({}) do |a, e|
           max_fitness = 0
           max_fit = nil
           top_grams.each do |top_gram|
             # the >= removes the 'none' possibility
-            if gram_collection.fitness[top_gram] &&
-                gram_collection.fitness[top_gram] >= max_fitness
-              max_fitness = gram_collection.fitness[top_gram]
+            if e.fitness[top_gram] && e.fitness[top_gram] >= max_fitness
+              max_fitness = e.fitness[top_gram]
               max_fit = top_gram
             end
           end
-          buckets[max_fit] ||= []
-          buckets[max_fit] << gram_collection.content
-          buckets
+          a[max_fit] ||= []
+          a[max_fit] << e.content
+          a
         end
       end
 
@@ -53,34 +57,17 @@ module Categorize
       # function worst case O(2 x (|frequent_grams| x |gram_collections|) +
       #                            |all_grams|)
       def determine_frequency_term_sets(all_grams, query)
-        # only count a result if it has non-0 words length
-        effective_length = @gram_collections.reject do |result|
-          result.grams.nil? || result.grams.empty?
-        end.length
-
-        min_cover_l = @min_support * effective_length
-
-        # for speed only look at top N grams
-        # below block, worst case O(|all_grams|)
-        frequent_grams = all_grams.sort do |gram1, gram2|
-          gram2.frequency <=> gram1.frequency
-        end.first(@num_top_grams)
+        frequent_grams = find_valid_sorted_grams(all_grams)
 
         # below block, worst case O(|frequent_grams| x |gram_collections|)
-        frequent_grams = frequent_grams.delete_if do |gram|
-          !cover(gram, min_cover_l)
-        end
-
-        # below block, worst case O(|frequent_grams| x |gram_collections|)
-        @gram_collections.reduce(Hash.new(0)) do |top_grams, gram_collection|
+        @gram_collections.reduce(Hash.new(0)) do |a, e|
           max_fitness = 0
           max_fit = nil
 
           frequent_grams.each do |gram|
-            content_frequency = (
-              gram_collection.content_to_frequency[gram.content] || 0)
+            content_frequency = (e.content_to_frequency[gram.content] || 0)
             fitness = content_frequency / gram.frequency.to_f
-            gram_collection.fitness[gram.content] = fitness
+            e.fitness[gram.content] = fitness
 
             if fitness > max_fitness
               max_fitness = fitness
@@ -88,9 +75,8 @@ module Categorize
             end
           end
 
-          # puts "#{max_fit}: #{max_fitness}"# if DEBUG
-          top_grams[max_fit] += 1 if max_fit
-          top_grams
+          a[max_fit] += 1 if max_fit
+          a
         end
       end
 
@@ -108,6 +94,26 @@ module Categorize
         end
 
         @gram_cover_cache[gram] = false
+      end
+
+      def min_coverage
+        # only count a result if it has non-0 words length
+        effective_length = @gram_collections.reject do |result|
+          result.grams.nil? || result.grams.empty?
+        end.length
+        @min_support * effective_length
+      end
+
+      def find_valid_sorted_grams(all_grams)
+        min_cover = min_coverage
+
+        # for speed only look at top N grams
+        # below block, worst case O(|all_grams|)
+        frequent_grams = all_grams.sort { |a, b| b.frequency <=> a.frequency }
+        frequent_grams = frequent_grams.first(@num_top_grams)
+
+        # below block, worst case O(|frequent_grams| x |gram_collections|)
+        frequent_grams.delete_if { |gram| !cover(gram, min_cover) }
       end
     end
   end

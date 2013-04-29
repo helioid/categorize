@@ -5,20 +5,14 @@ module Categorize
     module Grams
       def create_grams(query, records_to_words)
         all_grams = []
-        @query = query
-        @query_terms = query.split.map(&:downcase).map(&:strip)
-        @query_alt = "#{@query_terms[1..-1]} #{@query_terms[0]}"
-
-        invalid = Proc.new do |gram, *args|
-          # remove [[gram]] if == [[query]]
-          gram == @query || gram == @query_alt || @query_terms.include?(gram)
-        end
+        invalid = make_invalid_filter(query)
 
         gram_collections = records_to_words.map do |record, words|
           gram_collection = GramCollection.new(record, words, invalid)
           all_grams += gram_collection.grams
           gram_collection
         end
+
         return gram_collections, make_grams_unique(all_grams)
       end
 
@@ -32,14 +26,25 @@ module Categorize
       end
 
       def make_grams_unique(grams)
-        grams.reduce({}) do |hash, gram|
-          if hash[gram.content]
-            hash[gram.content].frequency += gram.frequency
+        grams.reduce({}) do |a, e|
+          if a[e.content]
+            a[e.content].frequency += e.frequency
           else
-            hash[gram.content] = gram
+            a[e.content] = e
           end
-          hash
+          a
         end.values
+      end
+
+      def make_invalid_filter(query)
+        @query = query
+        @query_terms = query.split.map(&:downcase).map(&:strip)
+        @query_alt = "#{@query_terms[1..-1]} #{@query_terms[0]}"
+
+        Proc.new do |gram, *args|
+          # remove [[gram]] if == [[query]]
+          gram == @query || gram == @query_alt || @query_terms.include?(gram)
+        end
       end
     end
   end

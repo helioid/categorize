@@ -17,10 +17,9 @@ categories = Categorize::Model.make_model(query, titles)
 # Unify the documents and the categories.
 urls = results.map(&:url)
 
-categories_to_urls = categories.reduce({}) do |hash, entry|
-  category, indices = entry
-  hash[category] = indices.map { |i| urls[i] }
-  hash
+categories_to_urls = categories.reduce({}) do |a, (category, indices)|
+  a[category] = indices.map { |i| urls[i] }
+  a
 end
 
 puts categories_to_urls
