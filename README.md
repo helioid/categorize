@@ -16,9 +16,21 @@ on the expected document size and length.
 
 ## Installation
 
-**Categorize** is installable as a [Ruby Gem](https://rubygems.org/gems/categorize):
+Install **categorize** as a Ruby [gem](https://rubygems.org/gems/categorize):
 ```bash
 $ gem install categorize
+```
+
+### Quick start: web categorization
+
+Install a web search gem:
+```bash
+$ gem install faroo
+```
+
+Run the example search [script](https://github.com/helioid/categorize/blob/master/examples/categorize_search_results.rb), a search for *nanotubes*:
+```bash
+$ ruby -e "$(curl -fsSL https://raw.github.com/helioid/categorize/master/examples/categorize_search_results.rb)"
 ```
 
 ## Basic Usage
@@ -145,7 +157,7 @@ $ gem install categorize
 $ gem install faroo
 ```
 
-### Simple ruby code in for a script or IRB.
+### Ruby code to run as a script or IRB.
 ```ruby
 require 'categorize'
 require 'faroo'
@@ -191,7 +203,7 @@ end
 }
 ```
 
-The above script is included in `examples/categorize_search_results.rb`.
+The above is included in [`examples/categorize_search_results.rb`](https://github.com/helioid/categorize/blob/master/examples/categorize_search_results.rb).
 
 ## Ownership
 
