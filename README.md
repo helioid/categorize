@@ -33,7 +33,7 @@ Run the example search [script](https://github.com/helioid/categorize/blob/maste
 $ ruby -e "$(curl -fsSL https://raw.github.com/helioid/categorize/master/examples/categorize_search_results.rb)"
 ```
 
-## Basic Usage
+## Basic usage
 ```ruby
 require 'categorize'
 
@@ -54,9 +54,9 @@ Model.make_model('lorem', documents)
 }
 ```
 
-## Modify Model Parameters
+## Modify model parameters
 ```ruby
-# Helioid search result abstracts as example documents.
+# Helioid search result abstracts as example documents
 documents = [
   %q(Using Helioid search refinement tools you can find and explore what
      you are looking for by interactively narrowing your search results.
@@ -77,7 +77,7 @@ documents = [
 
 bag_of_words = Models::BagOfWords.new
 
-# Customize the parameters for the bag of words model.
+# Customize the parameters for the bag of words model
 bag_of_words.max_buckets = 3
 bag_of_words.min_support = 0.4
 
@@ -89,7 +89,7 @@ Model.make_model('helioid', documents, bag_of_words)
 }
 ```
 
-## Use an alternative model.
+## Use an alternative model
 ```ruby
 clusterer = Models::Cluster.new
 clusterer.num_clusters = 3
@@ -102,7 +102,7 @@ Model.make_model('helioid', documents, clusterer)
 }
 ```
 
-## Use a hierarchical model.
+## Use a hierarchical model
 ```ruby
 hierarchical_model = Models::HierarchicalCluster.new
 
@@ -136,9 +136,9 @@ Model.make_model('helioid', documents, hierarchical_model)
 ]
 ```
 
-## Use the C version, sometimes it is faster.
+## Use the C version, sometimes it is faster
 ```ruby
-# It does not take a pivot word.
+# It does not take a pivot word
 Model.make_model_c(documents)
 
 => {
@@ -149,31 +149,31 @@ Model.make_model_c(documents)
 }
 ```
 
-## Example: Categorizing search results.
+## Example: categorizing search results
 
-### Install the required gems.
+### Install the required gems
 ```bash
 $ gem install categorize
 $ gem install faroo
 ```
 
-### Ruby code to run as a script or IRB.
+### Ruby code to run as a script or IRB
 ```ruby
 require 'categorize'
 require 'faroo'
 
 query = 'nanotubes'
 
-# Fetch 10 search results.
+# Fetch 10 search results
 results = Faroo.new('', 10).web(query)
 
-# Collect the titles.
+# Collect the titles
 titles = results.map(&:title)
 
-# Build the categories.
+# Build the categories
 categories = Categorize::Model.make_model(query, titles)
 
-# Unify the documents and the categories.
+# Unify the documents and the categories
 urls = results.map(&:url)
 
 categories.reduce({}) do |hash, entry|
