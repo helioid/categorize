@@ -36,6 +36,14 @@ module Categorize
 
         results.length.should eq(5)
       end
+
+      it 'should not fail with empty documents' do
+        hierarchical_model = Models::HierarchicalCluster.new
+
+        results = Model.make_model('helioid', [''], hierarchical_model)
+
+        results.length.should eq(0)
+      end
     end
   end
 end
